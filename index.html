@@ -1,41 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riverful Studio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0a0a0a; color: #f3f4f6; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Riverful — Mobile Game Studio</title>
+  <meta name="description" content="Riverful is a mobile game development studio based in Belgrade, Serbia." />
+
+  <!-- Open Graph / social previews -->
+  <meta property="og:title" content="Riverful" />
+  <meta property="og:description" content="Mobile game development studio based in Belgrade, Serbia." />
+  <meta property="og:image" content="logo.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://riverful.studio" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg: #000000;
+      --fg: #ffffff;
+      --muted: rgba(255, 255, 255, 0.55);
+      --dim: rgba(255, 255, 255, 0.32);
+      --hairline: rgba(255, 255, 255, 0.08);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Subtle film grain for depth — keeps the page from feeling like a flat black slab */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.7;
+      mix-blend-mode: screen;
+    }
+
+    /* Soft radial vignette from center to draw the eye inward */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 0%,
+        transparent 50%,
+        rgba(0, 0, 0, 0.6) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Top hairline corners — small editorial touch */
+    .corner {
+      position: fixed;
+      width: 18px;
+      height: 18px;
+      z-index: 3;
+      opacity: 0;
+      animation: fadeIn 1.4s 1.4s ease-out forwards;
+    }
+    .corner.tl { top: 24px; left: 24px; border-top: 1px solid var(--dim); border-left: 1px solid var(--dim); }
+    .corner.tr { top: 24px; right: 24px; border-top: 1px solid var(--dim); border-right: 1px solid var(--dim); }
+    .corner.bl { bottom: 24px; left: 24px; border-bottom: 1px solid var(--dim); border-left: 1px solid var(--dim); }
+    .corner.br { bottom: 24px; right: 24px; border-bottom: 1px solid var(--dim); border-right: 1px solid var(--dim); }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      position: relative;
+      z-index: 2;
+      gap: 2.5rem;
+      text-align: center;
+    }
+
+    .logo {
+      width: min(440px, 78vw);
+      height: auto;
+      display: block;
+      opacity: 0;
+      animation: fadeUp 1s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    .tagline {
+      font-family: "Instrument Serif", "Times New Roman", serif;
+      font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+      font-style: italic;
+      font-weight: 400;
+      max-width: 38ch;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+      color: var(--fg);
+      opacity: 0;
+      animation: fadeUp 1s 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    .tagline em {
+      font-style: normal;
+      letter-spacing: 0.04em;
+    }
+
+    .contact {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.7rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    .contact-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .email {
+      font-family: "JetBrains Mono", monospace;
+      font-size: clamp(0.85rem, 1.4vw, 1rem);
+      color: var(--fg);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 4px;
+      transition: opacity 0.3s ease;
+    }
+
+    .email::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--dim);
+      transition: background 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-origin: left;
+    }
+
+    .email:hover::after {
+      background: var(--fg);
+      transform: scaleX(1.02);
+    }
+
+    footer {
+      padding: 1.75rem 2.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--hairline);
+      opacity: 0;
+      animation: fadeIn 1.2s 1.2s ease-out forwards;
+    }
+
+    footer span:last-child::before {
+      content: "◆";
+      margin-right: 0.6em;
+      opacity: 0.5;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        gap: 2rem;
+        padding: 3rem 1.5rem;
+      }
+      footer {
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      footer span:last-child::before {
+        margin-right: 0.5em;
+      }
+      .corner { width: 14px; height: 14px; }
+      .corner.tl, .corner.tr { top: 16px; }
+      .corner.bl, .corner.br { bottom: 16px; }
+      .corner.tl, .corner.bl { left: 16px; }
+      .corner.tr, .corner.br { right: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
-<body class="flex flex-col min-h-screen justify-between p-8 md:p-16 max-w-4xl mx-auto font-sans">
+<body>
+  <span class="corner tl" aria-hidden="true"></span>
+  <span class="corner tr" aria-hidden="true"></span>
+  <span class="corner bl" aria-hidden="true"></span>
+  <span class="corner br" aria-hidden="true"></span>
 
-    <header>
-        <div class="text-xs tracking-[0.2em] text-gray-500 uppercase font-medium">
-            Riverful Studio
-        </div>
-    </header>
+  <main>
+    <img src="logo.png" alt="Riverful" class="logo" />
 
-    <main class="my-auto py-20">
-        <h1 class="text-4xl md:text-6xl font-light tracking-tight mb-6 max-w-2xl leading-tight">
-            We build digital experiences.
-        </h1>
-        <p class="text-gray-400 text-lg md:text-xl max-w-xl font-light leading-relaxed">
-            Independent studio focused on developing digital products, software solutions, and interactive projects. Our new website and projects are coming soon.
-        </p>
-    </main>
+    <p class="tagline">
+      Riverful is a mobile game development studio based in <em>Belgrade, Serbia</em>.
+    </p>
 
-    <footer class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-t border-neutral-900 pt-8 text-sm">
-        <div class="text-neutral-500 font-light">
-            &copy; 2026 Riverful Studio. All rights reserved.
-        </div>
-        <div>
-            <a href="mailto:nenad@riverful.studio" class="text-neutral-400 hover:text-white transition-colors duration-200 underline underline-offset-4 font-medium">
-                nenad@riverful.studio
-            </a>
-        </div>
-    </footer>
+    <div class="contact">
+      <span class="contact-label">Get in touch</span>
+      <a class="email" href="mailto:nenad@riverful.studio">nenad@riverful.studio</a>
+    </div>
+  </main>
 
+  <footer>
+    <span>© 2026 Riverful</span>
+    <span>Belgrade · Serbia</span>
+  </footer>
 </body>
 </html>
