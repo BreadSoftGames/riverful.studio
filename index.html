@@ -114,7 +114,7 @@
     }
 
     .logo {
-      width: min(440px, 78vw);
+      width: min(640px, 88vw);
       height: auto;
       display: block;
       opacity: 0;
@@ -129,14 +129,44 @@
       max-width: 38ch;
       line-height: 1.4;
       letter-spacing: 0.01em;
-      color: var(--fg);
+      color: rgba(255, 255, 255, 0.62);
+      min-height: 2.8em;
       opacity: 0;
       animation: fadeUp 1s 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
     .tagline em {
       font-style: normal;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
+      color: var(--fg);
+      background-image: linear-gradient(currentColor, currentColor);
+      background-size: 100% 1px;
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      padding-bottom: 3px;
+    }
+
+    .caret {
+      display: inline-block;
+      width: 2px;
+      height: 0.95em;
+      background: currentColor;
+      vertical-align: -0.12em;
+      margin-left: 2px;
+      color: var(--fg);
+      animation: blink 0.85s steps(2, start) infinite;
+    }
+
+    .caret.fading {
+      animation: blink 0.85s steps(2, start) infinite, caretOut 1.4s 1.5s ease-out forwards;
+    }
+
+    @keyframes blink {
+      to { visibility: hidden; }
+    }
+
+    @keyframes caretOut {
+      to { opacity: 0; }
     }
 
     .contact {
@@ -145,7 +175,7 @@
       align-items: center;
       gap: 0.7rem;
       opacity: 0;
-      animation: fadeUp 1s 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      animation: fadeUp 1s 4.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
     .contact-label {
@@ -262,9 +292,7 @@
   <main>
     <img src="logo.png" alt="Riverful" class="logo" />
 
-    <p class="tagline">
-      Riverful is a mobile game development studio based in <em>Belgrade, Serbia</em>.
-    </p>
+    <p class="tagline" id="tagline" aria-label="Riverful is a mobile game development studio based in Belgrade, Serbia."><span class="caret" aria-hidden="true"></span></p>
 
     <div class="contact">
       <span class="contact-label">Get in touch</span>
@@ -276,5 +304,63 @@
     <span>© 2026 Riverful</span>
     <span>Belgrade · Serbia</span>
   </footer>
+
+  <script>
+    (function () {
+      const tagline = document.getElementById("tagline");
+      const caret = tagline.querySelector(".caret");
+
+      const segments = [
+        { text: "Riverful is a mobile game development studio based in ", em: false },
+        { text: "Belgrade, Serbia", em: true },
+        { text: ".", em: false },
+      ];
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reduceMotion) {
+        // Skip animation — fill text instantly
+        segments.forEach((seg) => {
+          const el = document.createElement(seg.em ? "em" : "span");
+          el.textContent = seg.text;
+          tagline.insertBefore(el, caret);
+        });
+        caret.style.display = "none";
+        return;
+      }
+
+      let segIndex = 0;
+      let charIndex = 0;
+      let currentEl = null;
+
+      function tick() {
+        if (segIndex >= segments.length) {
+          caret.classList.add("fading");
+          return;
+        }
+        const seg = segments[segIndex];
+        if (charIndex === 0) {
+          currentEl = document.createElement(seg.em ? "em" : "span");
+          tagline.insertBefore(currentEl, caret);
+        }
+        const ch = seg.text[charIndex];
+        currentEl.textContent += ch;
+        charIndex++;
+        if (charIndex >= seg.text.length) {
+          segIndex++;
+          charIndex = 0;
+        }
+        // Natural variable pacing — slight pauses at punctuation
+        let delay = 38 + Math.random() * 30;
+        if (ch === ",") delay = 220;
+        else if (ch === ".") delay = 380;
+        else if (ch === " ") delay = 60;
+        setTimeout(tick, delay);
+      }
+
+      // Start after the tagline's fadeUp animation finishes (~1.55s)
+      setTimeout(tick, 1500);
+    })();
+  </script>
 </body>
 </html>
